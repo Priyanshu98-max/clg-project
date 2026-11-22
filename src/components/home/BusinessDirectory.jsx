@@ -55,13 +55,18 @@ export default function BusinessDirectory() {
           <div className="business-grid directory-grid">
             {businesses.map((business, index) => (
               <Link className="business-card directory-card" to={`/business/${business._id}`} key={business._id}>
-                {business.photoUrl ? (
-                  <img className="directory-photo" src={business.photoUrl} alt="" loading="lazy" />
-                ) : (
-                  <div className={`directory-placeholder directory-tone-${index % 4}`} aria-hidden="true">
-                    {(business.name || "B").slice(0, 1).toUpperCase()}
-                  </div>
-                )}
+                <div className={`directory-banner directory-tone-${index % 4}`}>
+                  {business.photoUrl ? (
+                    <img className="directory-photo" src={business.photoUrl} alt="" loading="lazy" />
+                  ) : (
+                    <div className="directory-placeholder" aria-hidden="true">
+                      {(business.name || "B").slice(0, 1).toUpperCase()}
+                    </div>
+                  )}
+                  <span className="directory-banner-kicker">INDEPENDENT / {String(index + 1).padStart(2, "0")}</span>
+                  <span className="directory-category-chip">{business.category || "Local business"}</span>
+                  <span className="directory-banner-mark" aria-hidden="true">✳</span>
+                </div>
                 <div className="business-card-footer">
                   <div>
                     <h3>{business.name}</h3>

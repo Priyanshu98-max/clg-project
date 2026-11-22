@@ -1,9 +1,13 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import heroImage from "../../assets/hero.png";
 import Nav from "../../components/home/nav.jsx";
 import SiteFooter from "../../components/home/SiteFooter.jsx";
 import BusinessDirectory from "../../components/home/BusinessDirectory.jsx";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const ReactiveWaveBackground = lazy(
   () => import("../../components/home/ReactiveWaveBackground.jsx")
@@ -37,14 +41,90 @@ function IntroLoader() {
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
+  const pageRef = useRef(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setIsLoading(false), 1050);
     return () => window.clearTimeout(timer);
   }, []);
 
+  useLayoutEffect(() => {
+    if (isLoading || !pageRef.current) return undefined;
+
+    const motionPreference = gsap.matchMedia();
+    const resizeObserver = new ResizeObserver(() => ScrollTrigger.refresh());
+    resizeObserver.observe(pageRef.current);
+
+    motionPreference.add("(prefers-reduced-motion: no-preference)", () => {
+      const revealElements = gsap.utils.toArray(
+        ".hero-copy, .hero-art, .section-heading, .directory-preview, .collab-graphic, .collab-copy, .collab-note, .register-copy, .register-art",
+        pageRef.current
+      );
+
+      revealElements.forEach((element) => {
+        gsap.fromTo(
+          element,
+          { autoAlpha: 0, y: 28 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.75,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: element,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      });
+
+      const collabSection = pageRef.current.querySelector(".collab-section");
+      const collabAtom = pageRef.current.querySelector(".collab-atom");
+
+      if (collabSection && collabAtom) {
+        const atomTimeline = gsap.timeline({
+          paused: true,
+          repeat: -1,
+          defaults: { ease: "none" },
+        }).to(collabAtom, {
+          rotation: 360,
+          duration: 24,
+          transformOrigin: "50% 50%",
+        });
+
+        ScrollTrigger.create({
+          trigger: collabSection,
+          start: "top 85%",
+          end: "bottom 15%",
+          onEnter: () => {
+            collabAtom.classList.add("is-active");
+            atomTimeline.play();
+          },
+          onLeave: () => {
+            atomTimeline.pause();
+            collabAtom.classList.remove("is-active");
+          },
+          onEnterBack: () => {
+            collabAtom.classList.add("is-active");
+            atomTimeline.play();
+          },
+          onLeaveBack: () => {
+            atomTimeline.pause();
+            collabAtom.classList.remove("is-active");
+          },
+        });
+      }
+    });
+
+    return () => {
+      resizeObserver.disconnect();
+      motionPreference.revert();
+    };
+  }, [isLoading]);
+
   return (
-    <main className="home-page">
+    <main className="home-page" ref={pageRef}>
       {isLoading && <IntroLoader />}
       <Nav />
 
@@ -149,9 +229,11 @@ export default function Home() {
       <section className="collab-section" id="collaborate">
         <div className="collab-inner">
           <div className="collab-graphic" aria-hidden="true">
-            <span className="collab-orbit collab-orbit-a" /><span className="collab-orbit collab-orbit-b" />
-            <span className="collab-center">✳</span>
-            <span className="collab-node node-one">B</span><span className="collab-node node-two">M</span><span className="collab-node node-three">+</span>
+            <div className="collab-atom">
+              <span className="collab-orbit collab-orbit-a" /><span className="collab-orbit collab-orbit-b" />
+              <span className="collab-center">✳</span>
+              <span className="collab-node node-one">B</span><span className="collab-node node-two">M</span><span className="collab-node node-three">+</span>
+            </div>
           </div>
           <div className="collab-copy">
             <div className="eyebrow"><span className="eyebrow-dot" /> BETTER, TOGETHER</div>

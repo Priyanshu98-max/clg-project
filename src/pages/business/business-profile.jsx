@@ -70,8 +70,15 @@ export default function BusinessProfile() {
           {notice && <p className="form-message form-success" role="status">{notice}</p>}
           <article className="business-profile">
             <div className="business-profile-cover">
-              <span>THE NORTHSTAR DIRECTORY</span>
-              <span>{locations[0]?.address || "Independent business"}</span>
+              {business.photoUrl && (
+                <img className="business-profile-cover-photo" src={business.photoUrl} alt="" />
+              )}
+              <div className="business-profile-cover-shade" aria-hidden="true" />
+              <div className="business-profile-cover-top">
+                <span>THE NORTHSTAR DIRECTORY</span>
+                <span>{locations[0]?.address || "Independent business"}</span>
+              </div>
+              <div className="business-profile-cover-mark" aria-hidden="true">N<span>✳</span></div>
             </div>
             <div className="business-profile-intro">
               <div className="business-profile-avatar">
