@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Northstar</title>
+    <script>
+      const repositoryBase = "/clg-project/";
+      const path = window.location.pathname.startsWith(repositoryBase)
+        ? window.location.pathname.slice(repositoryBase.length)
+        : window.location.pathname.replace(/^\/+/, "");
+      window.location.replace(repositoryBase + "?/" + path + window.location.search + window.location.hash);
+    </script>
+  </head>
+  <body></body>
+</html>

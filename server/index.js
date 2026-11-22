@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import multer from "multer";
 import { rateLimit } from "express-rate-limit";
+import cors from "cors";
 import { Business, Campaign, CollaborationRequest, User } from "./models.js";
 
 const app = express();
@@ -27,7 +28,14 @@ if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
 }
 
 app.disable("x-powered-by");
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+}));
+const frontendOrigin = (process.env.FRONTEND_URL || "").replace(/\/$/, "");
+app.use(cors({
+  origin: frontendOrigin || true,
+  credentials: true,
+}));
 app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
 
@@ -51,7 +59,7 @@ const setSession = (res, user) => {
   res.cookie(sessionCookie, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
     maxAge: sessionLifetime,
     path: "/",
   });
@@ -122,7 +130,8 @@ app.post(
       uploadStream.once("error", reject);
       uploadStream.end(req.file.buffer);
     });
-    return res.status(201).json({ photoUrl: `/api/business-photos/${uploadStream.id.toString()}` });
+    const photoUrl = `${process.env.API_PUBLIC_URL || `${req.protocol}://${req.get("host")}`}/api/business-photos/${uploadStream.id.toString()}`;
+    return res.status(201).json({ photoUrl });
   })
 );
 
@@ -195,7 +204,13 @@ app.get(
 );
 
 app.post("/api/auth/logout", (_req, res) => {
-  res.clearCookie(sessionCookie, { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production", path: "/" });
+  const isProduction = process.env.NODE_ENV === "production";
+  res.clearCookie(sessionCookie, {
+    httpOnly: true,
+    sameSite: isProduction ? "none" : "strict",
+    secure: isProduction,
+    path: "/",
+  });
   return res.json({ message: "Signed out." });
 });
 

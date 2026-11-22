@@ -13,6 +13,13 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      const spaPath = window.location.search.match(/^\?\/(.*)/);
+      if (spaPath) {
+        const target = "/clg-project/" + spaPath[1] + window.location.hash;
+        window.history.replaceState(null, "", target);
+      }
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

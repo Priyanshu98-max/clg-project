@@ -1,6 +1,7 @@
 export async function api(path, options = {}) {
   const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;
-  const response = await fetch(`/api${path}`, {
+  const apiBaseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+  const response = await fetch(`${apiBaseUrl}/api${path}`, {
     ...options,
     credentials: "same-origin",
     headers: {
