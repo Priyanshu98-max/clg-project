@@ -26,6 +26,17 @@ Express API backed by MongoDB. Explore the public business directory at
 
 Accounts use email and password; email OTP verification is not enabled.
 
+## Deploy
+
+The GitHub Pages workflow builds the frontend for `/clg-project/`. Set the
+repository Actions secret `VITE_API_URL` to the Render API's HTTPS origin,
+without a trailing slash or `/api` (for example,
+`https://northstar-api-ouxt.onrender.com`).
+Set `FRONTEND_URL` on the Render API service to
+`https://priyanshu98-max.github.io`; set `API_PUBLIC_URL` to that same Render
+API origin. The API uses credentialed cross-origin requests for sign-in sessions.
+After setting these values, push to `main` or run the Pages workflow manually.
+
 New business profiles are reviewed by an administrator before appearing publicly.
 Owners can edit their business details, branches, team, achievements, links, and
 collaboration preferences in `/dashboard`. Collaboration proposals are stored in

@@ -3,7 +3,7 @@ export async function api(path, options = {}) {
   const apiBaseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
   const response = await fetch(`${apiBaseUrl}/api${path}`, {
     ...options,
-    credentials: "same-origin",
+    credentials: "include",
     headers: {
       ...(options.body && !isFormData ? { "Content-Type": "application/json" } : {}),
       ...options.headers,

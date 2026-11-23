@@ -26,14 +26,17 @@ const adminEmails = new Set(
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
   throw new Error("Set JWT_SECRET to a random value of at least 32 characters.");
 }
+if (process.env.NODE_ENV === "production" && !process.env.FRONTEND_URL) {
+  throw new Error("Set FRONTEND_URL to the deployed frontend origin.");
+}
 
 app.disable("x-powered-by");
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
-const frontendOrigin = (process.env.FRONTEND_URL || "").replace(/\/$/, "");
+const frontendOrigin = new URL(process.env.FRONTEND_URL || "http://localhost:5173").origin;
 app.use(cors({
-  origin: frontendOrigin || true,
+  origin: frontendOrigin,
   credentials: true,
 }));
 app.use(express.json({ limit: "1mb" }));
