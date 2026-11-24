@@ -858,6 +858,7 @@ a:hover .arrow-icon-diagonal { transform: rotate(-45deg) translateX(3px); }
 }
 
 @media (max-width: 700px) {
+  #root { zoom: 1.04; }
   html { scroll-padding-top: 70px; }
   .site-header { position: absolute; padding: 14px 6%; }
   .site-nav { height: 44px; }
