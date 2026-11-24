@@ -25,7 +25,7 @@ export default function ReactiveWaveBackground({
     let disposed = false;
     const isMobileDevice = window.matchMedia("(max-width: 760px), (pointer: coarse)").matches;
     const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
-    const isStaticFrame = isMobileDevice || prefersReducedMotion;
+    const isStaticFrame = prefersReducedMotion;
 
     const pointer = new THREE.Vector2(0.5, 0.5);
     const pointerTarget = new THREE.Vector2(0.5, 0.5);
@@ -192,7 +192,7 @@ export default function ReactiveWaveBackground({
     };
 
     let lastFrame = 0;
-    const targetFrameInterval = 1000 / 30;
+    const targetFrameInterval = 1000 / (isMobileDevice ? 24 : 30);
 
     const renderFrame = (timestamp) => {
       if (disposed || !renderer) return;
